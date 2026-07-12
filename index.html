@@ -76,7 +76,7 @@
     --shadow: 0 10px 30px rgba(33,29,20,0.12);
   }
   *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth;overflow-x:hidden;max-width:100%;}
   body{
     margin:0;
     background:var(--cream);
@@ -84,7 +84,10 @@
     font-family:'Work Sans',sans-serif;
     line-height:1.55;
     -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    max-width:100%;
   }
+  img, svg{max-width:100%;height:auto;}
   h1,h2,h3,h4{
     font-family:'Fraunces',serif;
     margin:0;
@@ -168,7 +171,7 @@
   .hero h1 em{font-style:normal;color:var(--rust);}
   .hero p.lead{font-size:1.1rem;max-width:46ch;opacity:0.85;margin-bottom:30px;}
   .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:34px;}
-  .stat-strip{display:flex;gap:36px;font-family:'IBM Plex Mono',monospace;}
+  .stat-strip{display:flex;gap:28px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;}
   .stat-strip .num{font-size:1.5rem;font-weight:600;color:var(--acacia-deep);}
   .stat-strip .lbl{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;opacity:0.65;}
 
@@ -210,8 +213,9 @@
   /* ===== ABOUT / VALUES ===== */
   .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
   @media(max-width:860px){.about-grid{grid-template-columns:1fr;}}
-  .values-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--paper-line);border:1px solid var(--paper-line);margin-top:40px;}
-  @media(max-width:900px){.values-grid{grid-template-columns:repeat(2,1fr);}}
+  .values-grid{display:flex;flex-wrap:wrap;gap:1px;background:var(--paper-line);border:1px solid var(--paper-line);margin-top:40px;}
+  .value-card{flex:1 1 20%;}
+  @media(max-width:900px){.value-card{flex:1 1 50%;}}
   .value-card{background:var(--cream);padding:24px 18px;}
   .value-card .n{font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--rust);margin-bottom:10px;}
   .value-card h4{font-size:1rem;margin-bottom:6px;}
@@ -1277,7 +1281,43 @@ function buildReview(){
     Swimming: ${aSwim.value} · Earliest departure: ${aDate.value || '—'}
   `;
 }
-function submitApp(){
+// Set this to the "Catch Hook" URL from your Zapier webhook trigger.
+// See README.md under "Delivering application submissions" for setup steps.
+const APPLICATION_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/28102046/4uq60s9/";
+
+async function submitApp(){
+  const submitBtn = document.querySelector('#stepPane3 .btn.rust');
+  const originalLabel = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting...';
+
+  const payload = {
+    full_name: aName.value.trim(),
+    email: aEmail.value.trim(),
+    phone: aPhone.value.trim(),
+    age: aAge.value.trim(),
+    home_country: aHome.value,
+    county_or_town: aCounty.value.trim(),
+    preferred_route: aRoute.value,
+    preferred_city: aCity.value.trim(),
+    experience: aExp.value.trim(),
+    swimming_ability: aSwim.value,
+    earliest_departure: aDate.value,
+    submitted_at: new Date().toISOString()
+  };
+
+  try{
+    await fetch(APPLICATION_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+  }catch(err){
+    console.error('Application webhook error:', err);
+    // Still show confirmation — see README note on why, and consider a
+    // fallback (e.g. mailto link) if this matters for your launch.
+  }
+
   document.querySelector('.apply-top').style.display='none';
   document.querySelector('.step-track').style.display='none';
   document.getElementById('stepPane3').style.display='none';
