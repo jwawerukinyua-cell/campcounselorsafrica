@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.campcounselorsafrica.co.ke/sitemap.xml
