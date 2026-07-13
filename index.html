@@ -128,7 +128,9 @@
     border-bottom:1px solid rgba(232,223,200,0.1);
   }
   .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;max-width:1180px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:600;font-size:1.28rem;color:var(--acacia);}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:600;font-size:1.28rem;color:var(--acacia);white-space:nowrap;}
+  @media(max-width:520px){.brand{font-size:0.95rem;gap:7px;}.brand-logo{height:26px;}}
+  @media(max-width:400px){.brand{font-size:0.82rem;}}
   .brand .mark{
     width:32px;height:32px;border-radius:50%;
     background:var(--acacia);color:var(--gold);
@@ -223,8 +225,10 @@
   .value-card p{font-size:0.85rem;opacity:0.75;margin:0;}
 
   /* services */
-  .service-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--paper-line);border:1px solid var(--paper-line);}
-  @media(max-width:900px){.service-grid{grid-template-columns:1fr;}}
+  .service-grid{display:flex;flex-wrap:wrap;gap:1px;background:var(--paper-line);border:1px solid var(--paper-line);}
+  .service-card{flex:1 1 22%;}
+  @media(max-width:900px){.service-card{flex:1 1 100%;}}
+  .service-card.security{flex:1 1 100%;}
   .service-card{background:var(--cream);padding:28px 22px;min-height:180px;display:flex;flex-direction:column;justify-content:flex-end;min-width:0;}
   .service-card .tag2{font-family:'IBM Plex Mono',monospace;font-size:0.68rem;text-transform:uppercase;color:var(--rust-deep);margin-bottom:10px;}
   .service-card h4{font-size:1.05rem;margin-bottom:6px;}
@@ -253,8 +257,9 @@
   @media(max-width:520px){.t-photos figure{width:100%;}}
 
   /* ===== FIELD ARCHIVE GALLERY ===== */
-  .archive-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--paper-line);border:1px solid var(--paper-line);}
-  @media(max-width:900px){.archive-grid{grid-template-columns:1fr;}}
+  .archive-grid{display:flex;flex-wrap:wrap;gap:1px;background:var(--paper-line);border:1px solid var(--paper-line);}
+  .archive-card{flex:1 1 22%;}
+  @media(max-width:900px){.archive-card{flex:1 1 100%;}}
   .archive-card{background:#fff;overflow:hidden;min-width:0;}
   .archive-card img{width:100%;height:220px;object-fit:cover;display:block;filter:sepia(0.12) contrast(1.03);transition:transform .3s ease;}
   .archive-card:hover img{transform:scale(1.04);}
@@ -666,7 +671,7 @@
         <h4>Custom Dream Tours</h4>
         <p>Full vacation-shopping — finding the highest-quality itineraries in Kenya and Africa at the best market prices.</p>
       </div>
-      <div class="service-card security" style="grid-column:span 4;">
+      <div class="service-card security">
         <div class="tag2">High-Security Specialty</div>
         <h4>Security Vetting & Intelligence Screening</h4>
         <p style="max-width:70ch;">A thorough background-checking process carried out on potential candidates for sensitive dockets. We enlist specialized intelligence-gathering methods to verify whether candidates hold any incriminating pasts that would render them unsuitable — giving recruiters maximum peace of mind.</p>
