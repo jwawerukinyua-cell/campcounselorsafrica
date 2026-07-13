@@ -9,72 +9,86 @@ search engines and social platforms expect.
 | File | Purpose |
 |---|---|
 | `index.html` | The whole site — sections, styling, and JavaScript all in one file |
-| _(favicon files removed)_ | The favicon is now embedded directly inside `index.html` as a data URI |
+| `favicon.ico`, `favicon-16x16.png`, `favicon-32x32.png` | Browser tab icon |
+| `apple-touch-icon.png` | Icon when saved to an iPhone/iPad home screen |
+| `android-chrome-192x192.png`, `android-chrome-512x512.png` | Icon for Android home screen |
+| `site.webmanifest` | Tells phones how to display the site if added to a home screen |
 | `og-image.png` | The preview image shown when the site is shared on WhatsApp, Facebook, Twitter/X |
 | `logo.png` | Standalone logo file, referenced by the site's structured data |
 | `robots.txt` | Tells search engines they're allowed to crawl the whole site |
 | `sitemap.xml` | Tells search engines what pages exist, for faster indexing |
-| `cca-ai-proxy-worker.js` | A more locked-down way to run the AI Matcher (see setup guide below) |
 
-## Domain
+## ⚠️ One thing to fix before you publish
 
-This site is built for **www.campcounselorsafrica.co.ke** — already set throughout
-`index.html`, `sitemap.xml`, and `robots.txt`.
+I used `https://www.cca.co.ke/` as a placeholder domain throughout (it matches your
+`info@cca.co.ke` email). Before going live, confirm the real domain and update it in
+these places if it's different:
 
-One open item: the contact email in the site is `info@cca.co.ke`, not
-`@campcounselorsafrica.co.ke`. Confirm this is correct before full launch.
+- `index.html` — search for `cca.co.ke` (canonical tag, Open Graph tags, Twitter tags,
+  and the structured data script near the top of `<head>`)
+- `sitemap.xml` — the one `<loc>` entry
+- `robots.txt` — the `Sitemap:` line
+
+If you're only using the free `something.github.io` address for now with no custom
+domain yet, replace `https://www.cca.co.ke/` with your actual
+`https://yourusername.github.io/repo-name/` address in all the same spots.
 
 ## Deploying with GitHub Pages
 
-1. Settings -> Pages -> Source: "Deploy from a branch" -> `main` -> `/ (root)` -> Save.
-2. Test on the free github.io URL first.
-3. Once confirmed, add the custom domain under Settings -> Pages -> Custom domain,
-   set up the DNS records at your registrar (CNAME for www, A records for apex),
-   then tick "Enforce HTTPS" once DNS has propagated.
+1. **Create a new repository** on GitHub (e.g. `cca-website`). Public repos get free
+   Pages hosting; private repos need GitHub Pro/Team/Enterprise for Pages.
 
-## Setting up the AI Matcher feature (Cloudflare Worker)
+2. **Add these files to the repo root** — either drag-and-drop them in the GitHub web
+   UI ("Add file → Upload files") or via git:
+   ```bash
+   git clone https://github.com/yourusername/cca-website.git
+   cd cca-website
+   # copy all files from this folder in here
+   git add .
+   git commit -m "Initial site"
+   git push
+   ```
 
-The API key is kept off the public site. `cca-ai-proxy-worker.js` is a Cloudflare
-Worker that holds the key as a secret and proxies requests to Gemini.
+3. **Enable Pages**: in the repo, go to **Settings → Pages**. Under "Build and
+   deployment", set **Source** to "Deploy from a branch", pick the `main` branch and
+   `/ (root)` folder, then **Save**.
 
-1. Get a fresh key at aistudio.google.com/apikey
-2. `npm install -g wrangler` then `wrangler login`
-3. Put `cca-ai-proxy-worker.js` in a folder as `index.js`, run
-   `wrangler init cca-ai-proxy --from-dash=false`
-4. `wrangler secret put GEMINI_API_KEY` (paste your key)
-5. `wrangler deploy` — note the resulting `.workers.dev` URL
-6. In `index.html`, replace the `YOUR-SUBDOMAIN` placeholder in the `runAI()`
-   function with that real URL, then redeploy the site.
+4. GitHub will give you a live URL within a minute or two, usually
+   `https://yourusername.github.io/cca-website/`.
 
-## Delivering application submissions (Google Sheet + email)
+5. **Optional — custom domain** (e.g. `www.cca.co.ke`): in that same Pages settings
+   page, enter the domain under "Custom domain". GitHub will create a `CNAME` file in
+   your repo automatically. You'll then need to add DNS records at your domain
+   registrar:
+   - A `CNAME` record pointing `www` → `yourusername.github.io`
+   - Four `A` records on the root domain pointing to GitHub's IPs (GitHub's docs show
+     the current ones — search "GitHub Pages custom domain DNS records" for the
+     up-to-date list, since these occasionally change)
 
-The application form is wired to send data via a webhook — it just needs a real
-destination. `index.html` has a placeholder webhook URL waiting.
-
-**What you're building:** one Zapier Zap that catches the form submission and
-fans it out to a Google Sheet row and an email.
-
-1. **Create the Zap** at zapier.com -> Create Zap. Trigger app: "Webhooks by
-   Zapier" -> Event: "Catch Hook" -> Continue. Copy the generated URL (looks like
-   `https://hooks.zapier.com/hooks/catch/xxxxx/yyyyy/`) and send it to Claude to
-   plug into the site.
-2. **Add a Google Sheets step**: "Create Spreadsheet Row". Suggested columns:
-   full_name, email, phone, age, home_country, county_or_town, preferred_route,
-   preferred_city, experience, swimming_ability, earliest_departure, submitted_at.
-3. **Add an email step**: "Email by Zapier" or Gmail -> Send Email, to
-   info@cca.co.ke, subject like "New CCA Application: {{full_name}}".
-4. **Submit a real test application** on the live site once the URL is wired in,
-   then go back into the Sheets/Email steps in Zapier to map the real field names
-   (they only appear after Zapier has seen one real submission).
-5. **Publish the Zap.**
-
-**Known limitation:** there's no real backend, so if the webhook call fails
-silently, the applicant still sees a confirmation message on screen even though
-nothing arrived. Acceptable trade-off for a free, no-server setup for now —
-worth revisiting with a proper backend if guaranteed delivery becomes important.
+   DNS changes can take a few hours to propagate.
 
 ## After it's live — quick SEO checklist
 
-- Google Search Console: add the property, submit the sitemap.xml URL.
-- Test the social preview with Facebook's Sharing Debugger and the Twitter/X Card Validator.
-- Test structured data with Google's Rich Results Test.
+- **Google Search Console**: add the property, verify ownership, and submit
+  `https://your-domain/sitemap.xml` so Google indexes it faster.
+- **Test the social preview**: paste your live URL into
+  [Facebook's Sharing Debugger](https://developers.facebook.com/tools/debug/) and
+  [Twitter/X Card Validator](https://cards-dev.twitter.com/validator) to confirm the
+  `og-image.png` preview renders correctly.
+- **Test structured data**: paste your live URL into
+  [Google's Rich Results Test](https://search.google.com/test/rich-results) to confirm
+  the business info (address, phone, email) is being read correctly.
+- **Update contact details** in `index.html` and the structured data block if the
+  phone numbers, email, or address ever change — they currently appear in a few
+  places (footer, floating call button, structured data script).
+
+## Notes on the current build
+
+- The AI Program Matcher / Cover Letter Writer calls the Anthropic API directly from
+  the browser with no key required in this environment — if you move this file
+  outside of Claude's artifact system (e.g. plain GitHub Pages), that fetch call
+  will need a real backend proxy with your own Anthropic API key, since browsers
+  can't safely hold API keys. Flagging this now so it isn't a surprise later.
+- The application form does not currently submit anywhere — it just shows a
+  confirmation message. Wire it to a form service, email, or webhook once you've
+  decided how you want submissions delivered.

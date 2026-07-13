@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.campcounselorsafrica.co.ke/sitemap.xml
+Sitemap: https://www.cca.co.ke/sitemap.xml
