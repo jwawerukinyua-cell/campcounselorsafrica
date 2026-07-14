@@ -131,8 +131,8 @@
   .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:600;font-size:1.28rem;color:var(--acacia);min-width:0;flex:1 1 auto;overflow:hidden;}
   .brand-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;filter:brightness(1.22);}
   .nav > div:last-child{flex:0 0 auto;}
-  @media(max-width:520px){.brand{font-size:0.95rem;gap:7px;}.brand-logo{height:26px;}}
-  @media(max-width:400px){.brand{font-size:0.82rem;}}
+  @media(max-width:520px){.brand{font-size:1.05rem;gap:7px;}.brand-logo{height:28px;}}
+  @media(max-width:480px){.nav-apply-btn{display:none;}}
   .brand .mark{
     width:32px;height:32px;border-radius:50%;
     background:var(--acacia);color:var(--gold);
@@ -471,7 +471,7 @@
       <a href="#matcher">AI Matcher</a>
     </nav>
     <div style="display:flex;align-items:center;gap:10px;">
-      <a href="#apply" class="btn rust">Apply</a>
+      <a href="#apply" class="btn rust nav-apply-btn">Apply</a>
       <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
